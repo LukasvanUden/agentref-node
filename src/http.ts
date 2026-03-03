@@ -29,6 +29,10 @@ const DEFAULT_MAX_RETRIES = 2
 declare const __SDK_VERSION__: string
 const VERSION = typeof __SDK_VERSION__ === 'string' ? __SDK_VERSION__ : '0.0.0'
 
+function hasUsableIdempotencyKey(idempotencyKey: string | undefined): boolean {
+  return typeof idempotencyKey === 'string' && idempotencyKey.trim().length > 0
+}
+
 export class HttpClient {
   private readonly apiKey: string
   private readonly baseUrl: string
@@ -58,7 +62,8 @@ export class HttpClient {
   async request<T>(options: RequestOptions): Promise<T> {
     const url = this.buildUrl(options.path, options.query)
     const isSafe = SAFE_METHODS.has(options.method)
-    const canRetry = isSafe || (options.method === 'POST' && options.idempotencyKey !== undefined)
+    const hasIdempotency = options.method === 'POST' && hasUsableIdempotencyKey(options.idempotencyKey)
+    const canRetry = isSafe || hasIdempotency
     const maxAttempts = canRetry ? this.maxRetries + 1 : 1
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -71,8 +76,8 @@ export class HttpClient {
           'User-Agent': `agentref-node/${VERSION}`,
         }
 
-        if (options.method === 'POST' && options.idempotencyKey) {
-          headers['Idempotency-Key'] = options.idempotencyKey
+        if (hasIdempotency) {
+          headers['Idempotency-Key'] = options.idempotencyKey!.trim()
         }
 
         response = await fetch(url, {

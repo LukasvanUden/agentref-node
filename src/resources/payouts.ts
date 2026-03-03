@@ -1,5 +1,5 @@
 import type { HttpClient } from '../http.js'
-import type { PaginatedResponse, PendingAffiliate, Payout, PayoutStats, PayoutStatus } from '../types/index.js'
+import type { CreatePayoutParams, MutationOptions, PaginatedResponse, PendingAffiliate, Payout, PayoutStats, PayoutStatus } from '../types/index.js'
 
 export class PayoutsResource {
   constructor(private readonly http: HttpClient) {}
@@ -37,6 +37,16 @@ export class PayoutsResource {
       method: 'GET',
       path: '/payouts/stats',
       query: params,
+    })
+    return envelope.data
+  }
+
+  async create(data: CreatePayoutParams, options?: MutationOptions): Promise<Record<string, unknown>> {
+    const envelope = await this.http.request<{ data: Record<string, unknown>; meta: unknown }>({
+      method: 'POST',
+      path: '/payouts',
+      body: data,
+      idempotencyKey: options?.idempotencyKey,
     })
     return envelope.data
   }

@@ -27,35 +27,60 @@ export interface MutationOptions {
 export interface Merchant {
   id: string
   email: string
-  companyName?: string | null
-  domain?: string | null
-  domainVerified?: boolean
-  trustLevel?: string
-  stripeConnected?: boolean
-  createdAt?: string
-  [key: string]: unknown
+  companyName: string | null
+  domain: string | null
+  domainVerified: boolean
+  trustLevel: string
+  stripeConnected: boolean
+  createdAt: string
+}
+
+export interface UpdateMerchantParams {
+  companyName?: string
+  website?: string
+  logoUrl?: string
+  timezone?: string
+  defaultCookieDuration?: number
+  defaultPayoutThreshold?: number
+}
+
+export interface MerchantDomainStatus {
+  domain: string | null
+  verified: boolean
+  txtRecord: string | null
+}
+
+export interface StripeConnectSession {
+  url: string
 }
 
 export type CommissionType = 'one_time' | 'recurring' | 'recurring_limited'
 export type ProgramStatus = 'active' | 'paused' | 'archived'
+export type ProgramMarketplaceVisibility = 'private' | 'public'
 
 export interface Program {
   id: string
   name: string
-  description?: string | null
-  landingPageUrl?: string | null
+  description: string | null
+  landingPageUrl: string | null
   commissionType: CommissionType
   commissionPercent: number
-  commissionLimitMonths?: number | null
+  commissionLimitMonths: number | null
   cookieDuration: number
   payoutThreshold: number
   autoApproveAffiliates: boolean
   status: ProgramStatus
-  isPublic?: boolean
-  merchantId?: string
-  createdAt?: string
-  updatedAt?: string
-  [key: string]: unknown
+  isPublic: boolean
+  merchantId: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface UpdateProgramMarketplaceParams {
+  status?: ProgramMarketplaceVisibility
+  category?: string
+  description?: string
+  logoUrl?: string
 }
 
 export interface CreateProgramParams {
@@ -80,6 +105,7 @@ export interface UpdateProgramParams {
   description?: string
   landingPageUrl?: string
   status?: ProgramStatus
+  isPublic?: boolean
 }
 
 export interface CreateCouponParams {
@@ -89,77 +115,90 @@ export interface CreateCouponParams {
 }
 
 export interface ProgramStats {
-  [key: string]: unknown
+  clicks: number
+  conversions: number
+  revenue: number
+  commissions: number
+  period: string
 }
 
 export type AffiliateStatus = 'pending' | 'approved' | 'blocked'
 
 export interface Affiliate {
   id: string
-  userId?: string
-  programId?: string
-  code?: string
-  status?: AffiliateStatus | string
-  totalClicks?: number
-  totalConversions?: number
-  totalEarnings?: number
-  createdAt?: string
-  [key: string]: unknown
+  userId: string
+  programId: string
+  code: string
+  status: AffiliateStatus
+  totalClicks: number
+  totalConversions: number
+  totalEarnings: number
+  createdAt: string
 }
 
 export type ConversionStatus = 'pending' | 'approved' | 'rejected' | 'refunded'
 
 export interface Conversion {
   id: string
-  affiliateId?: string
-  programId?: string
-  amount?: number
-  commission?: number
-  status?: ConversionStatus | string
-  method?: 'cookie' | 'coupon' | 'metadata' | string
-  stripeSessionId?: string | null
-  createdAt?: string
-  [key: string]: unknown
+  affiliateId: string
+  programId: string
+  amount: number
+  commission: number
+  status: ConversionStatus
+  method: 'cookie' | 'coupon' | 'metadata'
+  stripeSessionId: string | null
+  createdAt: string
 }
 
 export interface ConversionStats {
-  [key: string]: unknown
+  total: number
+  pending: number
+  approved: number
+  totalRevenue: number
+  totalCommissions: number
 }
 
 export type PayoutStatus = 'pending' | 'processing' | 'completed' | 'failed'
 
 export interface Payout {
   id: string
-  affiliateId?: string
-  amount?: number
-  status?: PayoutStatus | string
-  method?: string | null
-  createdAt?: string
-  completedAt?: string | null
-  [key: string]: unknown
+  affiliateId: string
+  amount: number
+  status: PayoutStatus
+  method: string | null
+  createdAt: string
+  completedAt: string | null
+}
+
+export interface CreatePayoutParams {
+  affiliateId: string
+  programId: string
+  method: 'paypal' | 'bank_transfer'
+  notes?: string
 }
 
 export interface PendingAffiliate {
-  affiliateId?: string
-  email?: string
-  name?: string | null
-  code?: string
-  programId?: string
-  programName?: string
-  payoutMethod?: 'paypal' | 'bank_transfer' | null
-  paypalEmail?: string | null
-  bankIban?: string | null
-  pendingAmount?: number
-  currency?: string
-  threshold?: number
-  meetsThreshold?: boolean
-  commissionCount?: number
-  hasPayoutMethod?: boolean
-  [key: string]: unknown
+  affiliateId: string
+  email: string
+  name: string | null
+  code: string
+  programId: string
+  programName: string
+  payoutMethod: 'paypal' | 'bank_transfer' | null
+  paypalEmail: string | null
+  bankIban: string | null
+  pendingAmount: number
+  currency: string
+  threshold: number
+  meetsThreshold: boolean
+  commissionCount: number
+  hasPayoutMethod: boolean
 }
 
 export interface PayoutStats {
-  [key: string]: unknown
+  totalPaid: number
+  totalPending: number
+  count: number
 }
 
 export type FlagStatus = 'open' | 'reviewed' | 'dismissed' | 'confirmed'
@@ -172,18 +211,21 @@ export type FlagType =
 
 export interface Flag {
   id: string
-  affiliateId?: string
-  type?: FlagType | string
-  status?: FlagStatus | string
-  details?: Record<string, unknown> | null
-  note?: string | null
-  createdAt?: string
-  resolvedAt?: string | null
-  [key: string]: unknown
+  affiliateId: string
+  type: FlagType
+  status: FlagStatus
+  details: Record<string, unknown> | null
+  note: string | null
+  createdAt: string
+  resolvedAt: string | null
 }
 
 export interface FlagStats {
-  [key: string]: unknown
+  open: number
+  reviewed: number
+  dismissed: number
+  confirmed: number
+  total: number
 }
 
 export interface ResolveFlagParams {
@@ -198,34 +240,30 @@ export interface BillingTier {
   id: BillingTierId
   name: string
   price: number
-  maxRevenue?: number
-  features?: string[]
-  bookable?: boolean
-  [key: string]: unknown
+  maxRevenue: number
+  features: string[]
+  bookable: boolean
 }
 
 export interface BillingStatus {
-  tier?: BillingTierId | string
-  monthlyRevenue?: number
-  nextTier?: BillingTierId | string | null
-  stripeSubscriptionId?: string | null
-  [key: string]: unknown
+  tier: BillingTierId
+  monthlyRevenue: number
+  nextTier: BillingTierId | null
+  stripeSubscriptionId: string | null
 }
 
 export interface Coupon {
   id: string
   code: string
-  affiliateId?: string
-  programId?: string
-  createdAt?: string
-  [key: string]: unknown
+  affiliateId: string
+  programId: string
+  createdAt: string
 }
 
 export interface Invite {
-  token?: string
-  email?: string
-  programId?: string
-  expiresAt?: string
-  createdAt?: string
-  [key: string]: unknown
+  token: string
+  email: string
+  programId: string
+  expiresAt: string
+  createdAt: string
 }

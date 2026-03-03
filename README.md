@@ -28,19 +28,19 @@ console.log(programs.meta.requestId)
 ## Resources
 
 - `client.programs`
-  - `list`, `listAll`, `get`, `create`, `update`, `delete`, `stats`, `listAffiliates`, `listCoupons`, `createCoupon`, `createInvite`
+  - `list`, `listAll`, `get`, `create`, `update`, `delete`, `stats`, `listAffiliates`, `listCoupons`, `createCoupon`, `deleteCoupon`, `listInvites`, `createInvite`, `updateMarketplace`
 - `client.affiliates`
   - `list`, `get`, `approve`, `block`, `unblock`
 - `client.conversions`
   - `list`, `stats`, `recent`
 - `client.payouts`
-  - `list`, `listPending`, `stats`
+  - `list`, `listPending`, `stats`, `create`
 - `client.flags`
   - `list`, `stats`, `resolve`
 - `client.billing`
   - `current`, `tiers`, `subscribe`
 - `client.merchant`
-  - `get`, `domainStatus`
+  - `get`, `update`, `connectStripe`, `domainStatus`
 
 ## Pagination
 
@@ -64,7 +64,7 @@ For auto-pagination use `listAll()`. Stop condition is `meta.hasMore === false`.
 
 ## Idempotency
 
-Only POST mutation methods accept `options?: { idempotencyKey?: string }`.
+POST methods with server idempotency support accept `options?: { idempotencyKey?: string }`.
 
 - If set, `Idempotency-Key` is sent.
 - Retries for mutating requests are only enabled for POST + `idempotencyKey`.

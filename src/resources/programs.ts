@@ -9,6 +9,7 @@ import type {
   PaginatedResponse,
   Program,
   ProgramStats,
+  UpdateProgramMarketplaceParams,
   UpdateProgramParams,
 } from '../types/index.js'
 
@@ -21,6 +22,7 @@ export class ProgramsResource {
     page?: number
     pageSize?: number
     offset?: number
+    status?: string
   }): Promise<PaginatedResponse<Program>> {
     return this.http.request({ method: 'GET', path: '/programs', query: params })
   }
@@ -132,6 +134,31 @@ export class ProgramsResource {
       path: `/programs/${id}/invites`,
       body: data,
       idempotencyKey: options?.idempotencyKey,
+    })
+    return envelope.data
+  }
+
+  async listInvites(id: string): Promise<Invite[]> {
+    const envelope = await this.http.request<{ data: Invite[]; meta: unknown }>({
+      method: 'GET',
+      path: `/programs/${id}/invites`,
+    })
+    return envelope.data
+  }
+
+  async deleteCoupon(couponId: string): Promise<Coupon> {
+    const envelope = await this.http.request<{ data: Coupon; meta: unknown }>({
+      method: 'DELETE',
+      path: `/coupons/${couponId}`,
+    })
+    return envelope.data
+  }
+
+  async updateMarketplace(id: string, data: UpdateProgramMarketplaceParams): Promise<Record<string, unknown>> {
+    const envelope = await this.http.request<{ data: Record<string, unknown>; meta: unknown }>({
+      method: 'PATCH',
+      path: `/programs/${id}/marketplace`,
+      body: data,
     })
     return envelope.data
   }

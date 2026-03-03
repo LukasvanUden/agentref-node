@@ -251,6 +251,24 @@ describe('retry behavior', () => {
     expect(callCount).toBe(3)
   })
 
+  it('does not retry POST when idempotencyKey is empty', async () => {
+    let callCount = 0
+
+    server.use(
+      http.post(`${BASE}/programs`, () => {
+        callCount += 1
+        return HttpResponse.json(
+          { error: { code: 'INTERNAL_ERROR' }, meta: { requestId: 'r' } },
+          { status: 500 }
+        )
+      })
+    )
+
+    const client = new HttpClient({ apiKey: 'ak_live_test', maxRetries: 2 })
+    await client.request({ method: 'POST', path: '/programs', body: {}, idempotencyKey: '' }).catch(() => undefined)
+    expect(callCount).toBe(1)
+  })
+
   it('never retries PATCH', async () => {
     let callCount = 0
 
