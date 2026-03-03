@@ -1,6 +1,6 @@
 {
   "name": "agentref",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Official TypeScript/JavaScript SDK for the AgentRef Affiliate API",
   "author": "AgentRef <hi@agentref.dev>",
   "license": "MIT",
@@ -18,7 +18,11 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist", "README.md", "CHANGELOG.md"],
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
