@@ -1,12 +1,12 @@
 {
   "name": "agentref",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Official TypeScript/JavaScript SDK for the AgentRef Affiliate API",
   "author": "AgentRef <hi@agentref.dev>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/agentref/agentref-node.git"
+    "url": "https://github.com/LukasvanUden/agentref-node"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
