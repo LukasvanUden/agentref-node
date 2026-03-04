@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.4
+
+- Added `search`, `sortBy`, `sortOrder`, `status` parameters to `affiliates.list()`.
+- Added `trackingCode`, `skipOnboarding` parameters to `programs.createInvite()`.
+- Added `merchant.getPayoutInfo()` and `merchant.updatePayoutInfo()` methods.
+- Added `merchant.getNotifications()` and `merchant.updateNotifications()` methods.
+- Added `PUT` to `HttpMethod` union type.
+- Added new types: `AffiliateSortBy`, `SortOrder`, `CreateInviteParams`, `PayoutInfo`, `UpdatePayoutInfoParams`, `NotificationPreferences`, `UpdateNotificationPreferencesParams`.
+
 ## 1.0.3
 
 - Hardened idempotency retry gate: POST retries now require a non-empty idempotency key.
