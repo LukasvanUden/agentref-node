@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.5
+
+- **Fix:** `merchant.updatePayoutInfo()` now sends `PATCH` instead of `PUT` to match the API contract.
+- Added optional `include` parameter to `affiliates.get(id, { include: 'stats' })` for fetching aggregated stats.
+
 ## 1.0.4
 
 - Added `search`, `sortBy`, `sortOrder`, `status` parameters to `affiliates.list()`.
