@@ -3,6 +3,7 @@ import type {
   Affiliate,
   Coupon,
   CreateCouponParams,
+  CreateInviteParams,
   CreateProgramParams,
   Invite,
   MutationOptions,
@@ -120,13 +121,7 @@ export class ProgramsResource {
 
   async createInvite(
     id: string,
-    data: {
-      email?: string
-      name?: string
-      isPublic?: boolean
-      usageLimit?: number
-      expiresInDays?: number
-    },
+    data: CreateInviteParams,
     options?: MutationOptions
   ): Promise<Invite> {
     const envelope = await this.http.request<{ data: Invite; meta: unknown }>({

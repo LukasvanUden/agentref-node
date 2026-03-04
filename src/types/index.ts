@@ -267,3 +267,60 @@ export interface Invite {
   expiresAt: string
   createdAt: string
 }
+
+export type AffiliateSortBy = 'createdAt' | 'totalClicks' | 'totalRevenue' | 'name'
+export type SortOrder = 'asc' | 'desc'
+
+export interface CreateInviteParams {
+  email?: string
+  name?: string
+  isPublic?: boolean
+  usageLimit?: number
+  expiresInDays?: number
+  trackingCode?: string
+  skipOnboarding?: boolean
+}
+
+export interface PayoutInfo {
+  payoutMethod: 'paypal' | 'bank_transfer' | null
+  paypalEmail: string | null
+  bankIban: string | null
+  firstName: string | null
+  lastName: string | null
+  addressLine1: string | null
+  addressLine2: string | null
+  city: string | null
+  state: string | null
+  postalCode: string | null
+  vatId: string | null
+}
+
+export interface UpdatePayoutInfoParams {
+  payoutMethod?: 'paypal' | 'bank_transfer'
+  paypalEmail?: string
+  bankIban?: string
+  firstName?: string
+  lastName?: string
+  addressLine1?: string
+  addressLine2?: string
+  city?: string
+  state?: string
+  postalCode?: string
+  vatId?: string
+}
+
+export interface NotificationPreferences {
+  newAffiliate: boolean
+  newConversion: boolean
+  commissionApproved: boolean
+  payoutProcessed: boolean
+  weeklyDigest: boolean
+}
+
+export interface UpdateNotificationPreferencesParams {
+  newAffiliate?: boolean
+  newConversion?: boolean
+  commissionApproved?: boolean
+  payoutProcessed?: boolean
+  weeklyDigest?: boolean
+}

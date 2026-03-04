@@ -10,7 +10,7 @@ import {
 } from './errors.js'
 import type { AgentRefConfig } from './types/index.js'
 
-export type HttpMethod = 'GET' | 'HEAD' | 'POST' | 'PATCH' | 'DELETE'
+export type HttpMethod = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 const SAFE_METHODS: ReadonlySet<HttpMethod> = new Set(['GET', 'HEAD'])
 
