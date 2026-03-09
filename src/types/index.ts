@@ -26,13 +26,32 @@ export interface MutationOptions {
 
 export interface Merchant {
   id: string
-  email: string
-  companyName: string | null
-  domain: string | null
-  domainVerified: boolean
-  trustLevel: string
-  stripeConnected: boolean
+  userId: string
+  companyName: string
+  website: string | null
+  logoUrl: string | null
+  stripeAccountId: string | null
+  stripeConnectedAt: string | null
+  billingTier: string
+  stripeCustomerId: string | null
+  stripeSubscriptionId: string | null
+  paymentStatus: string
+  lastPaymentFailedAt: string | null
+  defaultCookieDuration: number
+  defaultPayoutThreshold: number
+  timezone: string
+  trackingRequiresConsent: boolean
+  trackingParamAliases: string[]
+  trackingLegacyMetadataFallbackEnabled: boolean
+  state: 'onboarding' | 'active' | 'verified'
+  verifiedDomain: string | null
+  domainVerificationToken: string | null
+  domainVerifiedAt: string | null
+  notificationPreferences: UpdateNotificationPreferencesParams | null
+  onboardingCompleted: boolean
+  onboardingStep: number
   createdAt: string
+  updatedAt: string
 }
 
 export interface UpdateMerchantParams {
@@ -42,12 +61,18 @@ export interface UpdateMerchantParams {
   timezone?: string
   defaultCookieDuration?: number
   defaultPayoutThreshold?: number
+  trackingRequiresConsent?: boolean
+  trackingParamAliases?: string[]
+  trackingLegacyMetadataFallbackEnabled?: boolean
 }
 
 export interface MerchantDomainStatus {
+  status: 'none' | 'pending' | 'verified'
   domain: string | null
-  verified: boolean
   txtRecord: string | null
+  verifiedAt: string | null
+  trackingMode: 'basic' | 'advanced'
+  advancedTrackingEnabled: boolean
 }
 
 export interface StripeConnectSession {
@@ -56,22 +81,31 @@ export interface StripeConnectSession {
 
 export type CommissionType = 'one_time' | 'recurring' | 'recurring_limited'
 export type ProgramStatus = 'active' | 'paused' | 'archived'
+export type ProgramMarketplaceStatus = 'private' | 'pending' | 'public'
 export type ProgramMarketplaceVisibility = 'private' | 'public'
 
 export interface Program {
   id: string
+  merchantId: string
   name: string
   description: string | null
+  slug: string
   landingPageUrl: string | null
+  portalSlug: string | null
+  marketplaceStatus: ProgramMarketplaceStatus
+  marketplaceCategory: string | null
+  marketplaceDescription: string | null
+  marketplaceLogoUrl: string | null
   commissionType: CommissionType
   commissionPercent: number
   commissionLimitMonths: number | null
+  commissionHoldDays: number
   cookieDuration: number
   payoutThreshold: number
+  currency: string
   autoApproveAffiliates: boolean
+  termsUrl: string | null
   status: ProgramStatus
-  isPublic: boolean
-  merchantId: string
   createdAt: string
   updatedAt: string
 }
@@ -93,6 +127,8 @@ export interface CreateProgramParams {
   description?: string
   landingPageUrl?: string
   commissionLimitMonths?: number
+  portalSlug?: string
+  currency?: string
 }
 
 export interface UpdateProgramParams {
@@ -105,7 +141,9 @@ export interface UpdateProgramParams {
   description?: string
   landingPageUrl?: string
   status?: ProgramStatus
-  isPublic?: boolean
+  portalSlug?: string | null
+  currency?: string
+  commissionLimitMonths?: number | null
 }
 
 export interface CreateCouponParams {
@@ -115,11 +153,20 @@ export interface CreateCouponParams {
 }
 
 export interface ProgramStats {
-  clicks: number
-  conversions: number
-  revenue: number
-  commissions: number
-  period: string
+  programId: string
+  programName: string
+  status: ProgramStatus
+  totalRevenue: number
+  totalConversions: number
+  totalCommissions: number
+  pendingCommissions: number
+  activeAffiliates: number
+  conversionsByStatus: {
+    pending: number
+    approved: number
+    rejected: number
+    refunded: number
+  }
 }
 
 export type AffiliateStatus = 'pending' | 'approved' | 'blocked'
@@ -284,7 +331,9 @@ export interface CreateInviteParams {
 export interface PayoutInfo {
   payoutMethod: 'paypal' | 'bank_transfer' | null
   paypalEmail: string | null
+  bankAccountHolder: string | null
   bankIban: string | null
+  bankBic: string | null
   firstName: string | null
   lastName: string | null
   addressLine1: string | null
@@ -298,7 +347,9 @@ export interface PayoutInfo {
 export interface UpdatePayoutInfoParams {
   payoutMethod?: 'paypal' | 'bank_transfer'
   paypalEmail?: string
+  bankAccountHolder?: string
   bankIban?: string
+  bankBic?: string
   firstName?: string
   lastName?: string
   addressLine1?: string

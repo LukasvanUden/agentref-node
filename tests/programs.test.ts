@@ -15,18 +15,26 @@ const makeResource = () => new ProgramsResource(new HttpClient({ apiKey: 'ak_liv
 
 const mockProgram = {
   id: 'prog_1',
+  merchantId: 'merch_1',
   name: 'Test Program',
+  description: null,
+  slug: 'test-program',
+  landingPageUrl: null,
+  portalSlug: 'test-program',
+  status: 'active',
+  marketplaceStatus: 'public',
+  marketplaceCategory: null,
+  marketplaceDescription: null,
+  marketplaceLogoUrl: null,
   commissionType: 'one_time',
   commissionPercent: 20,
   commissionLimitMonths: null,
+  commissionHoldDays: 30,
   cookieDuration: 30,
   payoutThreshold: 5000,
+  currency: 'USD',
   autoApproveAffiliates: true,
-  description: null,
-  landingPageUrl: null,
-  status: 'active',
-  isPublic: true,
-  merchantId: 'merch_1',
+  termsUrl: null,
   createdAt: '2026-01-01T00:00:00Z',
   updatedAt: '2026-01-01T00:00:00Z',
 }
@@ -78,6 +86,8 @@ describe('programs.create field names', () => {
       commissionType: 'one_time',
       commissionPercent: 15,
       cookieDuration: 45,
+      portalSlug: 'new-program',
+      currency: 'EUR',
     })
 
     expect(capturedBody).toMatchObject({
@@ -85,6 +95,8 @@ describe('programs.create field names', () => {
       commissionType: 'one_time',
       commissionPercent: 15,
       cookieDuration: 45,
+      portalSlug: 'new-program',
+      currency: 'EUR',
     })
 
     expect((capturedBody as Record<string, unknown>)['commissionRate']).toBeUndefined()

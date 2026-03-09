@@ -10,6 +10,7 @@ import type {
   PaginatedResponse,
   Program,
   ProgramStats,
+  ProgramStatus,
   UpdateProgramMarketplaceParams,
   UpdateProgramParams,
 } from '../types/index.js'
@@ -23,7 +24,7 @@ export class ProgramsResource {
     page?: number
     pageSize?: number
     offset?: number
-    status?: string
+    status?: ProgramStatus
   }): Promise<PaginatedResponse<Program>> {
     return this.http.request({ method: 'GET', path: '/programs', query: params })
   }

@@ -40,6 +40,7 @@ export type {
   PendingAffiliate,
   Payout,
   ProgramMarketplaceVisibility,
+  ProgramMarketplaceStatus,
   PayoutStats,
   PayoutStatus,
   Program,

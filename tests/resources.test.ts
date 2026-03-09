@@ -89,12 +89,23 @@ describe('remaining resources', () => {
   it('merchant.domainStatus unwraps envelope', async () => {
     server.use(
       http.get(`${BASE}/merchant/domain-status`, () =>
-        HttpResponse.json({ data: { domain: 'example.com', verified: true }, meta: { requestId: 'r' } })
+        HttpResponse.json({
+          data: {
+            status: 'verified',
+            domain: 'example.com',
+            txtRecord: null,
+            verifiedAt: '2026-01-01T00:00:00Z',
+            trackingMode: 'advanced',
+            advancedTrackingEnabled: true,
+          },
+          meta: { requestId: 'r' },
+        })
       )
     )
 
     const result = await client.merchant.domainStatus()
-    expect(result.verified).toBe(true)
+    expect(result.status).toBe('verified')
+    expect(result.trackingMode).toBe('advanced')
   })
 
   it('merchant.update sends PATCH payload', async () => {
@@ -106,13 +117,32 @@ describe('remaining resources', () => {
           {
             data: {
               id: 'merch_1',
-              email: 'merchant@example.com',
+              userId: 'user_1',
               companyName: 'AgentRef Inc',
-              domain: null,
-              domainVerified: false,
-              trustLevel: 'standard',
-              stripeConnected: false,
+              website: 'https://agentref.dev',
+              logoUrl: null,
+              stripeAccountId: null,
+              stripeConnectedAt: null,
+              billingTier: 'free',
+              stripeCustomerId: null,
+              stripeSubscriptionId: null,
+              paymentStatus: 'active',
+              lastPaymentFailedAt: null,
+              defaultCookieDuration: 30,
+              defaultPayoutThreshold: 5000,
+              timezone: 'UTC',
+              trackingRequiresConsent: true,
+              trackingParamAliases: ['ref', 'partner'],
+              trackingLegacyMetadataFallbackEnabled: true,
+              state: 'verified',
+              verifiedDomain: 'agentref.dev',
+              domainVerificationToken: null,
+              domainVerifiedAt: '2026-01-01T00:00:00Z',
+              notificationPreferences: { newAffiliate: true },
+              onboardingCompleted: true,
+              onboardingStep: 4,
               createdAt: '2026-01-01T00:00:00Z',
+              updatedAt: '2026-01-02T00:00:00Z',
             },
             meta: { requestId: 'r' },
           }
@@ -120,8 +150,18 @@ describe('remaining resources', () => {
       })
     )
 
-    await client.merchant.update({ companyName: 'AgentRef Inc' })
-    expect(capturedBody).toMatchObject({ companyName: 'AgentRef Inc' })
+    const merchant = await client.merchant.update({
+      companyName: 'AgentRef Inc',
+      trackingRequiresConsent: true,
+      trackingParamAliases: ['ref', 'partner'],
+    })
+    expect(capturedBody).toMatchObject({
+      companyName: 'AgentRef Inc',
+      trackingRequiresConsent: true,
+      trackingParamAliases: ['ref', 'partner'],
+    })
+    expect(merchant.state).toBe('verified')
+    expect(merchant.verifiedDomain).toBe('agentref.dev')
   })
 
   it('merchant.connectStripe posts to connect endpoint', async () => {
@@ -167,6 +207,107 @@ describe('remaining resources', () => {
 
     await client.programs.updateMarketplace('prog_1', { status: 'public', category: 'SaaS' })
     expect(capturedBody).toMatchObject({ status: 'public', category: 'SaaS' })
+  })
+
+  it('programs.stats unwraps current stats shape', async () => {
+    server.use(
+      http.get(`${BASE}/programs/prog_1/stats`, () =>
+        HttpResponse.json({
+          data: {
+            programId: 'prog_1',
+            programName: 'Growth Program',
+            status: 'active',
+            totalRevenue: 25000,
+            totalConversions: 12,
+            totalCommissions: 5000,
+            pendingCommissions: 1200,
+            activeAffiliates: 3,
+            conversionsByStatus: {
+              pending: 1,
+              approved: 10,
+              rejected: 1,
+              refunded: 0,
+            },
+          },
+          meta: { requestId: 'r' },
+        })
+      )
+    )
+
+    const result = await client.programs.stats('prog_1')
+    expect(result.programId).toBe('prog_1')
+    expect(result.conversionsByStatus.approved).toBe(10)
+  })
+
+  it('merchant.getPayoutInfo unwraps bank transfer fields', async () => {
+    server.use(
+      http.get(`${BASE}/me/payout-info`, () =>
+        HttpResponse.json({
+          data: {
+            payoutMethod: 'bank_transfer',
+            paypalEmail: null,
+            bankAccountHolder: 'Jane Doe',
+            bankIban: '****1234',
+            bankBic: 'COBADEFFXXX',
+            firstName: 'Jane',
+            lastName: 'Doe',
+            addressLine1: 'Main Street 1',
+            addressLine2: null,
+            city: 'Berlin',
+            state: null,
+            postalCode: '10115',
+            vatId: 'DE123',
+          },
+          meta: { requestId: 'r' },
+        })
+      )
+    )
+
+    const result = await client.merchant.getPayoutInfo()
+    expect(result.bankAccountHolder).toBe('Jane Doe')
+    expect(result.bankBic).toBe('COBADEFFXXX')
+  })
+
+  it('merchant.updatePayoutInfo sends bank transfer fields', async () => {
+    let capturedBody: unknown
+
+    server.use(
+      http.patch(`${BASE}/me/payout-info`, async ({ request }) => {
+        capturedBody = await request.json()
+        return HttpResponse.json({
+          data: {
+            payoutMethod: 'bank_transfer',
+            paypalEmail: null,
+            bankAccountHolder: 'Jane Doe',
+            bankIban: '****1234',
+            bankBic: 'COBADEFFXXX',
+            firstName: 'Jane',
+            lastName: 'Doe',
+            addressLine1: 'Main Street 1',
+            addressLine2: null,
+            city: 'Berlin',
+            state: null,
+            postalCode: '10115',
+            vatId: 'DE123',
+          },
+          meta: { requestId: 'r' },
+        })
+      })
+    )
+
+    await client.merchant.updatePayoutInfo({
+      payoutMethod: 'bank_transfer',
+      bankAccountHolder: 'Jane Doe',
+      bankIban: 'DE89370400440532013000',
+      bankBic: 'COBADEFFXXX',
+    })
+
+    expect(capturedBody).toMatchObject({
+      payoutMethod: 'bank_transfer',
+      bankAccountHolder: 'Jane Doe',
+      bankIban: 'DE89370400440532013000',
+      bankBic: 'COBADEFFXXX',
+    })
   })
 
   it('programs.deleteCoupon calls coupon delete endpoint', async () => {
