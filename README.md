@@ -21,14 +21,14 @@ console.log(programs.meta.requestId)
 ## Authentication
 
 - API key is sent as `Authorization: Bearer <key>`.
-- Supported key prefixes: `ak_live_*`, `ak_aff_*`, `ak_onb_*`.
+- Supported key prefixes: `ak_live_*`, `ak_aff_*`.
 - You can pass `apiKey` directly or use `AGENTREF_API_KEY`.
 - Default behavior hard-fails in browser contexts to prevent API key exposure.
 
 ## Resources
 
 - `client.programs`
-  - `list`, `listAll`, `get`, `create`, `update`, `delete`, `stats`, `listAffiliates`, `listCoupons`, `createCoupon`, `deleteCoupon`, `listInvites`, `createInvite`, `updateMarketplace`
+  - `list`, `listAll`, `get`, `create`, `update`, `delete`, `stats`, `listAffiliates`, `listCoupons`, `createCoupon`, `deleteCoupon`, `listInvites`, `createInvite`, `updateMarketplace`, `connectStripe`, `disconnectStripe`, `verifyDomain`, `removeDomainVerification`, `getDomainStatus`
 - `client.affiliates`
   - `list`, `get`, `approve`, `block`, `unblock`
 - `client.conversions`
@@ -40,7 +40,9 @@ console.log(programs.meta.requestId)
 - `client.billing`
   - `current`, `tiers`, `subscribe`
 - `client.merchant`
-  - `get`, `update`, `connectStripe`, `domainStatus`
+  - `get`, `update`, `getPayoutInfo`, `updatePayoutInfo`, `getNotifications`, `updateNotifications`
+- `client.webhooks`
+  - `list`, `create`, `get`, `update`, `delete`, `rotateSecret`
 
 ## Pagination
 

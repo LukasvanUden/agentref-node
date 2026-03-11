@@ -11,6 +11,7 @@ describe('AgentRef client', () => {
     expect(client.flags).toBeDefined()
     expect(client.billing).toBeDefined()
     expect(client.merchant).toBeDefined()
+    expect(client.webhooks).toBeDefined()
   })
 
   it('throws without apiKey and env', () => {

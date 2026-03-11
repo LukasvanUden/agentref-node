@@ -1,6 +1,6 @@
 {
   "name": "agentref",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Official TypeScript/JavaScript SDK for the AgentRef Affiliate API",
   "author": "AgentRef <hi@agentref.dev>",
   "license": "MIT",

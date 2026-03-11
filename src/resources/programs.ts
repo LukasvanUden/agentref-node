@@ -2,14 +2,21 @@ import type { HttpClient } from '../http.js'
 import type {
   Affiliate,
   Coupon,
+  ConnectProgramStripeParams,
+  ConnectProgramStripeResponse,
   CreateCouponParams,
   CreateInviteParams,
   CreateProgramParams,
+  DisconnectProgramStripeResponse,
   Invite,
   MutationOptions,
   PaginatedResponse,
   Program,
+  ProgramDetail,
+  ProgramDomainVerificationInitResponse,
+  ProgramDomainVerificationStatusResponse,
   ProgramStats,
+  SuccessResponse,
   ProgramStatus,
   UpdateProgramMarketplaceParams,
   UpdateProgramParams,
@@ -47,8 +54,8 @@ export class ProgramsResource {
     }
   }
 
-  async get(id: string): Promise<Program> {
-    const envelope = await this.http.request<{ data: Program; meta: unknown }>({
+  async get(id: string): Promise<ProgramDetail> {
+    const envelope = await this.http.request<{ data: ProgramDetail; meta: unknown }>({
       method: 'GET',
       path: `/programs/${id}`,
     })
@@ -155,6 +162,48 @@ export class ProgramsResource {
       method: 'PATCH',
       path: `/programs/${id}/marketplace`,
       body: data,
+    })
+    return envelope.data
+  }
+
+  async connectStripe(id: string, data?: ConnectProgramStripeParams): Promise<ConnectProgramStripeResponse> {
+    const envelope = await this.http.request<{ data: ConnectProgramStripeResponse; meta: unknown }>({
+      method: 'POST',
+      path: `/programs/${id}/connect-stripe`,
+      body: data,
+    })
+    return envelope.data
+  }
+
+  async disconnectStripe(id: string): Promise<DisconnectProgramStripeResponse> {
+    const envelope = await this.http.request<{ data: DisconnectProgramStripeResponse; meta: unknown }>({
+      method: 'DELETE',
+      path: `/programs/${id}/connect-stripe`,
+    })
+    return envelope.data
+  }
+
+  async verifyDomain(id: string, data: { domain: string }): Promise<ProgramDomainVerificationInitResponse> {
+    const envelope = await this.http.request<{ data: ProgramDomainVerificationInitResponse; meta: unknown }>({
+      method: 'POST',
+      path: `/programs/${id}/verify-domain`,
+      body: data,
+    })
+    return envelope.data
+  }
+
+  async removeDomainVerification(id: string): Promise<SuccessResponse> {
+    const envelope = await this.http.request<{ data: SuccessResponse; meta: unknown }>({
+      method: 'DELETE',
+      path: `/programs/${id}/verify-domain`,
+    })
+    return envelope.data
+  }
+
+  async getDomainStatus(id: string): Promise<ProgramDomainVerificationStatusResponse> {
+    const envelope = await this.http.request<{ data: ProgramDomainVerificationStatusResponse; meta: unknown }>({
+      method: 'GET',
+      path: `/programs/${id}/verify-domain/status`,
     })
     return envelope.data
   }

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Removed obsolete merchant-scoped integration methods from the active SDK surface.
+- Aligned `merchant.get()` / `merchant.update()` types with the final merchant profile contract.
+- Added program-scoped integration methods on `programs`: Stripe connect/disconnect and domain verification/status/removal.
+- Added `webhooks` resource with list/create/get/update/delete/rotate-secret support.
+
 ## 1.0.5
 
 - **Fix:** `merchant.updatePayoutInfo()` now sends `PATCH` instead of `PUT` to match the API contract.

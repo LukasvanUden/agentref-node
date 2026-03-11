@@ -24,17 +24,20 @@ export interface MutationOptions {
   idempotencyKey?: string
 }
 
+export type BillingRequirementStatus =
+  | 'not_required'
+  | 'required'
+  | 'grace_period'
+  | 'restricted'
+  | 'active'
+
 export interface Merchant {
   id: string
   userId: string
   companyName: string
-  website: string | null
   logoUrl: string | null
-  stripeAccountId: string | null
-  stripeConnectedAt: string | null
   billingTier: string
-  stripeCustomerId: string | null
-  stripeSubscriptionId: string | null
+  billingRequirementStatus: BillingRequirementStatus
   paymentStatus: string
   lastPaymentFailedAt: string | null
   defaultCookieDuration: number
@@ -43,11 +46,7 @@ export interface Merchant {
   trackingRequiresConsent: boolean
   trackingParamAliases: string[]
   trackingLegacyMetadataFallbackEnabled: boolean
-  state: 'onboarding' | 'active' | 'verified'
-  verifiedDomain: string | null
-  domainVerificationToken: string | null
-  domainVerifiedAt: string | null
-  notificationPreferences: UpdateNotificationPreferencesParams | null
+  notificationPreferences: NotificationPreferences | null
   onboardingCompleted: boolean
   onboardingStep: number
   createdAt: string
@@ -56,7 +55,6 @@ export interface Merchant {
 
 export interface UpdateMerchantParams {
   companyName?: string
-  website?: string
   logoUrl?: string
   timezone?: string
   defaultCookieDuration?: number
@@ -66,23 +64,12 @@ export interface UpdateMerchantParams {
   trackingLegacyMetadataFallbackEnabled?: boolean
 }
 
-export interface MerchantDomainStatus {
-  status: 'none' | 'pending' | 'verified'
-  domain: string | null
-  txtRecord: string | null
-  verifiedAt: string | null
-  trackingMode: 'basic' | 'advanced'
-  advancedTrackingEnabled: boolean
-}
-
-export interface StripeConnectSession {
-  url: string
-}
-
 export type CommissionType = 'one_time' | 'recurring' | 'recurring_limited'
 export type ProgramStatus = 'active' | 'paused' | 'archived'
 export type ProgramMarketplaceStatus = 'private' | 'pending' | 'public'
 export type ProgramMarketplaceVisibility = 'private' | 'public'
+export type ProgramReadiness = 'setup' | 'partial' | 'ready'
+export type StripeConnectMethod = 'oauth_url' | 'restricted_key' | 'fallback_url'
 
 export interface Program {
   id: string
@@ -90,8 +77,10 @@ export interface Program {
   name: string
   description: string | null
   slug: string
+  website: string | null
   landingPageUrl: string | null
   portalSlug: string | null
+  status: ProgramStatus
   marketplaceStatus: ProgramMarketplaceStatus
   marketplaceCategory: string | null
   marketplaceDescription: string | null
@@ -101,13 +90,24 @@ export interface Program {
   commissionLimitMonths: number | null
   commissionHoldDays: number
   cookieDuration: number
+  trackingRequiresConsent: boolean | null
+  trackingParamAliases: string[] | null
+  trackingLegacyMetadataFallbackEnabled: boolean | null
   payoutThreshold: number
   currency: string
   autoApproveAffiliates: boolean
   termsUrl: string | null
-  status: ProgramStatus
+  stripeAccountId: string | null
+  stripeConnectedAt: string | null
+  verifiedDomain: string | null
+  domainVerificationToken: string | null
+  domainVerifiedAt: string | null
   createdAt: string
   updatedAt: string
+}
+
+export interface ProgramDetail extends Program {
+  readiness: ProgramReadiness
 }
 
 export interface UpdateProgramMarketplaceParams {
@@ -144,6 +144,48 @@ export interface UpdateProgramParams {
   portalSlug?: string | null
   currency?: string
   commissionLimitMonths?: number | null
+}
+
+export interface ConnectProgramStripeParams {
+  method?: StripeConnectMethod
+  stripeAccountId?: string
+}
+
+export interface ConnectProgramStripeResponse {
+  connected: boolean
+  method: StripeConnectMethod
+  programId: string
+  programReadiness?: ProgramReadiness
+  stripeAccountId?: string
+  authUrl?: string
+  message: string
+}
+
+export interface DisconnectProgramStripeResponse {
+  success: boolean
+  programId: string
+}
+
+export interface ProgramDomainVerificationInitResponse {
+  programId: string
+  domain: string
+  token: string
+  txtRecord: string
+  txtRecordName: string
+  message: string
+}
+
+export interface ProgramDomainVerificationStatusResponse {
+  verified: boolean
+  domain: string | null
+  verifiedAt: string | null
+  programId: string
+  programReadiness: ProgramReadiness
+  message: string
+}
+
+export interface SuccessResponse {
+  success: boolean
 }
 
 export interface CreateCouponParams {
@@ -374,4 +416,56 @@ export interface UpdateNotificationPreferencesParams {
   commissionApproved?: boolean
   payoutProcessed?: boolean
   weeklyDigest?: boolean
+}
+
+export type WebhookEventType =
+  | 'program.created'
+  | 'program.updated'
+  | 'affiliate.joined'
+  | 'affiliate.approved'
+  | 'affiliate.blocked'
+  | 'affiliate.unblocked'
+  | 'conversion.created'
+  | 'conversion.refunded'
+  | 'payout.created'
+  | 'payout.processing'
+  | 'payout.completed'
+  | 'payout.failed'
+  | 'flag.resolved'
+
+export type WebhookEndpointStatus = 'active' | 'disabled'
+
+export interface WebhookEndpoint {
+  id: string
+  name: string
+  url: string
+  status: WebhookEndpointStatus
+  programId: string | null
+  schemaVersion: 2
+  subscribedEvents: WebhookEventType[]
+  secretLastFour: string | null
+  createdAt: string
+  updatedAt: string
+  disabledAt: string | null
+}
+
+export interface CreateWebhookEndpointParams {
+  name: string
+  url: string
+  programId?: string
+  schemaVersion?: 2
+  subscribedEvents: WebhookEventType[]
+}
+
+export interface UpdateWebhookEndpointParams {
+  name?: string
+  url?: string
+  programId?: string | null
+  schemaVersion?: 2
+  subscribedEvents?: WebhookEventType[]
+}
+
+export interface WebhookSecretResponse {
+  endpoint: WebhookEndpoint
+  signingSecret: string
 }

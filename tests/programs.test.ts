@@ -19,6 +19,7 @@ const mockProgram = {
   name: 'Test Program',
   description: null,
   slug: 'test-program',
+  website: 'https://agentref.dev',
   landingPageUrl: null,
   portalSlug: 'test-program',
   status: 'active',
@@ -31,10 +32,18 @@ const mockProgram = {
   commissionLimitMonths: null,
   commissionHoldDays: 30,
   cookieDuration: 30,
+  trackingRequiresConsent: false,
+  trackingParamAliases: ['ref'],
+  trackingLegacyMetadataFallbackEnabled: true,
   payoutThreshold: 5000,
   currency: 'USD',
   autoApproveAffiliates: true,
   termsUrl: null,
+  stripeAccountId: null,
+  stripeConnectedAt: null,
+  verifiedDomain: null,
+  domainVerificationToken: null,
+  domainVerifiedAt: null,
   createdAt: '2026-01-01T00:00:00Z',
   updatedAt: '2026-01-01T00:00:00Z',
 }
@@ -59,13 +68,14 @@ describe('programs.get envelope unwrap', () => {
   it('returns Program directly', async () => {
     server.use(
       http.get(`${BASE}/programs/prog_1`, () =>
-        HttpResponse.json({ data: mockProgram, meta: { requestId: 'req_2' } })
+        HttpResponse.json({ data: { ...mockProgram, readiness: 'ready' }, meta: { requestId: 'req_2' } })
       )
     )
 
     const result = await makeResource().get('prog_1')
     expect(result.id).toBe('prog_1')
     expect(result.commissionType).toBe('one_time')
+    expect(result.readiness).toBe('ready')
     expect((result as Record<string, unknown>)['commissionRate']).toBeUndefined()
   })
 })

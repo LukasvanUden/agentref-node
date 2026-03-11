@@ -1,10 +1,8 @@
 import type { HttpClient } from '../http.js'
 import type {
   Merchant,
-  MerchantDomainStatus,
   NotificationPreferences,
   PayoutInfo,
-  StripeConnectSession,
   UpdateMerchantParams,
   UpdateNotificationPreferencesParams,
   UpdatePayoutInfoParams,
@@ -26,22 +24,6 @@ export class MerchantResource {
       method: 'PATCH',
       path: '/merchant',
       body: data,
-    })
-    return envelope.data
-  }
-
-  async connectStripe(): Promise<StripeConnectSession> {
-    const envelope = await this.http.request<{ data: StripeConnectSession; meta: unknown }>({
-      method: 'POST',
-      path: '/merchant/connect-stripe',
-    })
-    return envelope.data
-  }
-
-  async domainStatus(): Promise<MerchantDomainStatus> {
-    const envelope = await this.http.request<{ data: MerchantDomainStatus; meta: unknown }>({
-      method: 'GET',
-      path: '/merchant/domain-status',
     })
     return envelope.data
   }
