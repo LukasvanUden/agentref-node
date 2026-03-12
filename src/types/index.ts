@@ -69,7 +69,7 @@ export type ProgramStatus = 'active' | 'paused' | 'archived'
 export type ProgramMarketplaceStatus = 'private' | 'pending' | 'public'
 export type ProgramMarketplaceVisibility = 'private' | 'public'
 export type ProgramReadiness = 'setup' | 'partial' | 'ready'
-export type StripeConnectMethod = 'oauth_url' | 'restricted_key' | 'fallback_url'
+export type StripeConnectMethod = 'oauth_url' | 'restricted_key'
 
 export interface Program {
   id: string
@@ -121,6 +121,7 @@ export interface CreateProgramParams {
   name: string
   commissionType: CommissionType
   commissionPercent: number
+  website?: string
   cookieDuration?: number
   payoutThreshold?: number
   autoApproveAffiliates?: boolean
@@ -135,6 +136,7 @@ export interface UpdateProgramParams {
   name?: string
   commissionType?: CommissionType
   commissionPercent?: number
+  website?: string
   cookieDuration?: number
   payoutThreshold?: number
   autoApproveAffiliates?: boolean
