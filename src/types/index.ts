@@ -69,7 +69,7 @@ export type ProgramStatus = 'active' | 'paused' | 'archived'
 export type ProgramMarketplaceStatus = 'private' | 'pending' | 'public'
 export type ProgramMarketplaceVisibility = 'private' | 'public'
 export type ProgramReadiness = 'setup' | 'partial' | 'ready'
-export type StripeConnectMethod = 'oauth_url' | 'restricted_key'
+export type StripeConnectMethod = 'oauth_url'
 
 export interface Program {
   id: string
@@ -150,7 +150,6 @@ export interface UpdateProgramParams {
 
 export interface ConnectProgramStripeParams {
   method?: StripeConnectMethod
-  stripeAccountId?: string
 }
 
 export interface ConnectProgramStripeResponse {
@@ -158,7 +157,6 @@ export interface ConnectProgramStripeResponse {
   method: StripeConnectMethod
   programId: string
   programReadiness?: ProgramReadiness
-  stripeAccountId?: string
   authUrl?: string
   message: string
 }
