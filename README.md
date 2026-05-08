@@ -38,6 +38,8 @@ if (firstProgram) {
 }
 ```
 
+`createLink` uses `destinationPath` and `customSlug`. `updateLink` follows the current REST update contract and accepts `name`, `targetUrl`, and `isActive`.
+
 ## Authentication
 
 - API key is sent as `Authorization: Bearer <key>`.
@@ -101,6 +103,8 @@ await client.applications.approve(
 Merchant keys can manage resources. Affiliate keys can list, download, and render
 published resources for joined programs.
 
+The REST SDK supports social posts, social-post media, publish/unpublish/archive/notify actions, and download URLs. Collection creation, external-link creation, generic file upload sessions, and URL import are currently available through Merchant MCP, not through the REST SDK.
+
 ```ts
 const post = await client.marketingResources.createSocialPost(
   'prog-uuid',
@@ -143,7 +147,7 @@ await client.marketplace.apply(marketplace.data[0]!.programId!, {
 
 ## Pagination
 
-List endpoints return:
+Paginated list endpoints return:
 
 ```ts
 {
@@ -158,6 +162,8 @@ List endpoints return:
   }
 }
 ```
+
+Some convenience list methods return plain arrays because their REST endpoints return array data directly, including `affiliateWorkspace.listPrograms()`, `affiliateWorkspace.listLinks()`, `marketingResources.list()`, `marketingResources.listForAffiliate()`, `webhooks.list()`, and `conversions.recent()`.
 
 For auto-pagination use `listAll()`. Stop condition is `meta.hasMore === false`.
 
