@@ -4,6 +4,11 @@
 
 - No unreleased changes.
 
+## 5.1.2
+
+- Added live affiliate program destination fields to the Affiliate Workspace detail type.
+- Marked `payoutCompliance` optional to match the production API response.
+
 ## 5.1.1
 
 - Aligned Affiliate Link examples and types with the live API response `code` field.

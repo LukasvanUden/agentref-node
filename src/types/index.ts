@@ -72,7 +72,9 @@ export interface AffiliateWorkspaceProgramDetail {
   payoutThreshold: number
   payoutFrequency: string
   currency: string
-  payoutCompliance: Record<string, unknown>
+  payoutCompliance?: Record<string, unknown>
+  allowCustomDestinations?: boolean
+  allowedLandingPages?: Array<Record<string, unknown>>
   termsUrl: string | null
   code: string
   isApproved: boolean

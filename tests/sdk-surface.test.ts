@@ -73,6 +73,37 @@ describe('complete SDK surface', () => {
         capturedProgram = new URL(request.url).searchParams.get('program_id') ?? ''
         return HttpResponse.json({ data: { totalClicks: 4 }, meta: {} })
       }),
+      http.get(`${BASE}/me/programs/prog_1`, () =>
+        HttpResponse.json({
+          data: {
+            affiliateId: 'aff_1',
+            programId: 'prog_1',
+            programName: 'Program',
+            commissionType: 'one_time',
+            commissionPercent: 20,
+            commissionLimitMonths: null,
+            cookieDuration: 30,
+            payoutThreshold: 10000,
+            payoutFrequency: 'monthly',
+            currency: 'USD',
+            allowCustomDestinations: true,
+            allowedLandingPages: [{ path: '/pricing', label: 'Pricing' }],
+            termsUrl: null,
+            code: 'jane',
+            isApproved: true,
+            isBlocked: false,
+            taxFormCompleted: false,
+            totalClicks: 0,
+            totalConversions: 0,
+            totalRevenue: 0,
+            totalCommission: 0,
+            totalPaidOut: 0,
+            pendingCommission: 0,
+            createdAt: '2026-01-01T00:00:00.000Z',
+          },
+          meta: {},
+        })
+      ),
       http.post(`${BASE}/me/links`, async ({ request }) => {
         capturedLinkBody = await request.json()
         capturedProgram = new URL(request.url).searchParams.get('program_id') ?? ''
@@ -85,6 +116,7 @@ describe('complete SDK surface', () => {
     const programEarnings = await client.affiliateWorkspace.listProgramEarnings('prog_1')
     const payouts = await client.affiliateWorkspace.listPayouts()
     const clicks = await client.affiliateWorkspace.clickStats({ programId: 'prog_1' })
+    const program = await client.affiliateWorkspace.getProgram('prog_1')
     const link = await client.affiliateWorkspace.createLink(
       { name: 'Pricing', destinationPath: '/pricing', customSlug: 'jane-review' },
       { programId: 'prog_1', idempotencyKey: 'idem-link-1' }
@@ -95,6 +127,7 @@ describe('complete SDK surface', () => {
     expect(programEarnings.data[0]?.id).toBe('earn_1')
     expect(payouts.data[0]?.id).toBe('pay_1')
     expect(clicks.totalClicks).toBe(4)
+    expect(program.allowedLandingPages?.[0]?.path).toBe('/pricing')
     expect(capturedProgram).toBe('prog_1')
     expect(capturedLinkBody).toMatchObject({
       name: 'Pricing',
