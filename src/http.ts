@@ -22,7 +22,7 @@ export interface RequestOptions {
   idempotencyKey?: string
 }
 
-const DEFAULT_BASE_URL = 'https://www.agentref.dev/api/v1'
+const DEFAULT_BASE_URL = 'https://www.agentref.co/api/v1'
 const DEFAULT_TIMEOUT = 30_000
 const DEFAULT_MAX_RETRIES = 2
 

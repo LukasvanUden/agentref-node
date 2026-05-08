@@ -4,7 +4,7 @@ import { setupServer } from 'msw/node'
 import { AgentRef } from '../src/index.js'
 import { ForbiddenError } from '../src/errors.js'
 
-const BASE = 'https://www.agentref.dev/api/v1'
+const BASE = 'https://www.agentref.co/api/v1'
 const server = setupServer()
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
@@ -107,7 +107,6 @@ describe('remaining resources', () => {
               timezone: 'UTC',
               trackingRequiresConsent: true,
               trackingParamAliases: ['ref', 'partner'],
-              trackingLegacyMetadataFallbackEnabled: true,
               notificationPreferences: { newAffiliate: true },
               onboardingCompleted: true,
               onboardingStep: 4,
@@ -157,64 +156,6 @@ describe('remaining resources', () => {
     expect(capturedBody).toMatchObject({ method: 'oauth_url' })
     expect(result.programId).toBe('prog_1')
     expect(result.authUrl).toContain('stripe.com')
-  })
-
-  it('programs.verifyDomain unwraps the program-scoped response', async () => {
-    server.use(
-      http.post(`${BASE}/programs/prog_1/verify-domain`, () =>
-        HttpResponse.json({
-          data: {
-            programId: 'prog_1',
-            domain: 'agentref.dev',
-            token: 'verify_me',
-            txtRecord: 'verify_me',
-            txtRecordName: '_agentref.agentref.dev',
-            message: 'Add the TXT record.',
-          },
-          meta: { requestId: 'r' },
-        })
-      )
-    )
-
-    const result = await client.programs.verifyDomain('prog_1', { domain: 'agentref.dev' })
-    expect(result.programId).toBe('prog_1')
-    expect(result.txtRecordName).toBe('_agentref.agentref.dev')
-  })
-
-  it('programs.getDomainStatus unwraps the program-scoped status response', async () => {
-    server.use(
-      http.get(`${BASE}/programs/prog_1/verify-domain/status`, () =>
-        HttpResponse.json({
-          data: {
-            verified: true,
-            domain: 'agentref.dev',
-            verifiedAt: '2026-01-01T00:00:00Z',
-            programId: 'prog_1',
-            programReadiness: 'ready',
-            message: 'Domain verified.',
-          },
-          meta: { requestId: 'r' },
-        })
-      )
-    )
-
-    const result = await client.programs.getDomainStatus('prog_1')
-    expect(result.verified).toBe(true)
-    expect(result.programReadiness).toBe('ready')
-  })
-
-  it('programs.removeDomainVerification returns success', async () => {
-    server.use(
-      http.delete(`${BASE}/programs/prog_1/verify-domain`, () =>
-        HttpResponse.json({
-          data: { success: true },
-          meta: { requestId: 'r' },
-        })
-      )
-    )
-
-    const result = await client.programs.removeDomainVerification('prog_1')
-    expect(result.success).toBe(true)
   })
 
   it('programs.disconnectStripe returns success payload', async () => {
@@ -423,7 +364,7 @@ describe('remaining resources', () => {
     expect(result.conversionsByStatus.approved).toBe(10)
   })
 
-  it('merchant.getPayoutInfo unwraps bank transfer fields', async () => {
+  it('payoutInfo.get unwraps bank transfer fields', async () => {
     server.use(
       http.get(`${BASE}/me/payout-info`, () =>
         HttpResponse.json({
@@ -447,12 +388,12 @@ describe('remaining resources', () => {
       )
     )
 
-    const result = await client.merchant.getPayoutInfo()
+    const result = await client.payoutInfo.get()
     expect(result.bankAccountHolder).toBe('Jane Doe')
     expect(result.bankBic).toBe('COBADEFFXXX')
   })
 
-  it('merchant.updatePayoutInfo sends bank transfer fields', async () => {
+  it('payoutInfo.update sends bank transfer fields', async () => {
     let capturedBody: unknown
 
     server.use(
@@ -479,7 +420,7 @@ describe('remaining resources', () => {
       })
     )
 
-    await client.merchant.updatePayoutInfo({
+    await client.payoutInfo.update({
       payoutMethod: 'bank_transfer',
       bankAccountHolder: 'Jane Doe',
       bankIban: 'DE89370400440532013000',

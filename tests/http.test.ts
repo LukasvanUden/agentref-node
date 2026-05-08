@@ -10,7 +10,7 @@ import {
   ServerError,
 } from '../src/errors.js'
 
-const BASE = 'https://www.agentref.dev/api/v1'
+const BASE = 'https://www.agentref.co/api/v1'
 const server = setupServer()
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))

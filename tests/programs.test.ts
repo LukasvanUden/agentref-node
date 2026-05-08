@@ -4,7 +4,7 @@ import { setupServer } from 'msw/node'
 import { ProgramsResource } from '../src/resources/programs.js'
 import { HttpClient } from '../src/http.js'
 
-const BASE = 'https://www.agentref.dev/api/v1'
+const BASE = 'https://www.agentref.co/api/v1'
 const server = setupServer()
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
@@ -34,16 +34,12 @@ const mockProgram = {
   cookieDuration: 30,
   trackingRequiresConsent: false,
   trackingParamAliases: ['ref'],
-  trackingLegacyMetadataFallbackEnabled: true,
   payoutThreshold: 5000,
   currency: 'USD',
   autoApproveAffiliates: true,
   termsUrl: null,
   stripeAccountId: null,
   stripeConnectedAt: null,
-  verifiedDomain: null,
-  domainVerificationToken: null,
-  domainVerifiedAt: null,
   createdAt: '2026-01-01T00:00:00Z',
   updatedAt: '2026-01-01T00:00:00Z',
 }

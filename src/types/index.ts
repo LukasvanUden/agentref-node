@@ -12,6 +12,98 @@ export interface PaginatedResponse<T> {
   meta: PaginationMeta
 }
 
+export interface AffiliateWorkspaceOverviewProgramStats {
+  programId: string
+  programName: string
+  totalClicks: number
+  totalConversions: number
+  totalRevenue: number
+  totalCommission: number
+  totalPaidOut: number
+}
+
+export interface AffiliateWorkspaceOverview {
+  affiliateProfileId: string
+  programCount: number
+  activeProgramCount: number
+  totalEarnings: number
+  pendingEarnings: number
+  availableEarnings: number
+  paidEarnings: number
+  programStats: AffiliateWorkspaceOverviewProgramStats[]
+}
+
+export interface AffiliateWorkspaceProgram {
+  affiliateId: string
+  programId: string
+  programName: string
+  programDescription: string | null
+  companyName: string | null
+  portalSlug: string | null
+  portalTheme: string | null
+  marketplaceLogoUrl: string | null
+  commissionType: CommissionType
+  commissionPercent: number
+  code: string
+  isApproved: boolean
+  isBlocked: boolean
+  totalClicks: number
+  totalConversions: number
+  totalRevenue: number
+  totalCommission: number
+  totalPaidOut: number
+  createdAt: string
+}
+
+export interface AffiliateWorkspaceProgramDetail {
+  affiliateId: string
+  programId: string
+  programName: string
+  programDescription: string | null
+  merchantCompanyName: string | null
+  portalTheme: string | null
+  marketplaceLogoUrl: string | null
+  website: string | null
+  landingPageUrl: string | null
+  commissionType: CommissionType
+  commissionPercent: number
+  commissionLimitMonths: number | null
+  cookieDuration: number
+  payoutThreshold: number
+  payoutFrequency: string
+  currency: string
+  payoutCompliance: Record<string, unknown>
+  termsUrl: string | null
+  code: string
+  isApproved: boolean
+  isBlocked: boolean
+  payoutMethod: string | null
+  paypalEmail: string | null
+  bankAccountHolder: string | null
+  bankIban: string | null
+  bankBic: string | null
+  firstName: string | null
+  lastName: string | null
+  companyName: string | null
+  addressLine1: string | null
+  addressLine2: string | null
+  city: string | null
+  state: string | null
+  postalCode: string | null
+  country: string | null
+  vatId: string | null
+  taxIdType: string | null
+  taxId: string | null
+  taxFormCompleted: boolean
+  totalClicks: number
+  totalConversions: number
+  totalRevenue: number
+  totalCommission: number
+  totalPaidOut: number
+  pendingCommission: number
+  createdAt: string
+}
+
 export interface AgentRefConfig {
   apiKey?: string
   baseUrl?: string
@@ -23,6 +115,8 @@ export interface AgentRefConfig {
 export interface MutationOptions {
   idempotencyKey?: string
 }
+
+export type ApiObject = Record<string, unknown>
 
 export type BillingRequirementStatus =
   | 'not_required'
@@ -45,7 +139,6 @@ export interface Merchant {
   timezone: string
   trackingRequiresConsent: boolean
   trackingParamAliases: string[]
-  trackingLegacyMetadataFallbackEnabled: boolean
   notificationPreferences: NotificationPreferences | null
   onboardingCompleted: boolean
   onboardingStep: number
@@ -61,13 +154,13 @@ export interface UpdateMerchantParams {
   defaultPayoutThreshold?: number
   trackingRequiresConsent?: boolean
   trackingParamAliases?: string[]
-  trackingLegacyMetadataFallbackEnabled?: boolean
 }
 
 export type CommissionType = 'one_time' | 'recurring' | 'recurring_limited'
 export type ProgramStatus = 'active' | 'paused' | 'archived'
-export type ProgramMarketplaceStatus = 'private' | 'pending' | 'public'
-export type ProgramMarketplaceVisibility = 'private' | 'public'
+export type ProgramMarketplaceStatus = 'private' | 'draft' | 'public'
+export type ProgramMarketplaceVisibility = ProgramMarketplaceStatus
+export type ProgramApplicationAccess = 'open' | 'invite_only'
 export type ProgramReadiness = 'setup' | 'partial' | 'ready'
 export type StripeConnectMethod = 'oauth_url'
 
@@ -82,6 +175,7 @@ export interface Program {
   portalSlug: string | null
   status: ProgramStatus
   marketplaceStatus: ProgramMarketplaceStatus
+  applicationAccess?: ProgramApplicationAccess
   marketplaceCategory: string | null
   marketplaceDescription: string | null
   marketplaceLogoUrl: string | null
@@ -92,16 +186,12 @@ export interface Program {
   cookieDuration: number
   trackingRequiresConsent: boolean | null
   trackingParamAliases: string[] | null
-  trackingLegacyMetadataFallbackEnabled: boolean | null
   payoutThreshold: number
   currency: string
   autoApproveAffiliates: boolean
   termsUrl: string | null
   stripeAccountId: string | null
   stripeConnectedAt: string | null
-  verifiedDomain: string | null
-  domainVerificationToken: string | null
-  domainVerifiedAt: string | null
   createdAt: string
   updatedAt: string
 }
@@ -130,6 +220,11 @@ export interface CreateProgramParams {
   commissionLimitMonths?: number
   portalSlug?: string
   currency?: string
+  marketplaceStatus?: ProgramMarketplaceStatus
+  applicationAccess?: ProgramApplicationAccess
+  marketplaceCategory?: string
+  marketplaceDescription?: string
+  marketplaceLogoUrl?: string
 }
 
 export interface UpdateProgramParams {
@@ -146,6 +241,11 @@ export interface UpdateProgramParams {
   portalSlug?: string | null
   currency?: string
   commissionLimitMonths?: number | null
+  marketplaceStatus?: ProgramMarketplaceStatus
+  applicationAccess?: ProgramApplicationAccess
+  marketplaceCategory?: string | null
+  marketplaceDescription?: string | null
+  marketplaceLogoUrl?: string | null
 }
 
 export interface ConnectProgramStripeParams {
@@ -164,24 +264,6 @@ export interface ConnectProgramStripeResponse {
 export interface DisconnectProgramStripeResponse {
   success: boolean
   programId: string
-}
-
-export interface ProgramDomainVerificationInitResponse {
-  programId: string
-  domain: string
-  token: string
-  txtRecord: string
-  txtRecordName: string
-  message: string
-}
-
-export interface ProgramDomainVerificationStatusResponse {
-  verified: boolean
-  domain: string | null
-  verifiedAt: string | null
-  programId: string
-  programReadiness: ProgramReadiness
-  message: string
 }
 
 export interface SuccessResponse {
@@ -206,12 +288,13 @@ export interface ProgramStats {
   conversionsByStatus: {
     pending: number
     approved: number
+    partiallyRefunded?: number
     rejected: number
     refunded: number
   }
 }
 
-export type AffiliateStatus = 'pending' | 'approved' | 'blocked'
+export type AffiliateStatus = 'approved' | 'blocked'
 
 export interface Affiliate {
   id: string
@@ -225,7 +308,7 @@ export interface Affiliate {
   createdAt: string
 }
 
-export type ConversionStatus = 'pending' | 'approved' | 'rejected' | 'refunded'
+export type ConversionStatus = 'pending' | 'approved' | 'partially_refunded' | 'rejected' | 'refunded'
 
 export interface Conversion {
   id: string
@@ -323,7 +406,7 @@ export interface ResolveFlagParams {
   blockAffiliate?: boolean
 }
 
-export type BillingTierId = 'free' | 'starter' | 'growth' | 'pro' | 'scale'
+export type BillingTierId = 'free' | 'starter' | 'growth' | 'pro'
 
 export interface BillingTier {
   id: BillingTierId
@@ -416,6 +499,204 @@ export interface UpdateNotificationPreferencesParams {
   commissionApproved?: boolean
   payoutProcessed?: boolean
   weeklyDigest?: boolean
+}
+
+export type ApplicationStatus = 'pending' | 'approved' | 'declined' | 'withdrawn' | 'blocked'
+export type ApplicationSource = 'browser' | 'api' | 'mcp' | 'invite' | 'import'
+
+export interface Application extends ApiObject {
+  id: string
+  status?: ApplicationStatus
+}
+
+export interface ReviewApplicationParams {
+  note?: string
+}
+
+export interface AffiliateWorkspaceIdentity extends ApiObject {
+  key: ApiObject
+  owner: ApiObject
+}
+
+export interface AffiliateLink extends ApiObject {
+  id: string
+  name?: string
+  refCode?: string
+  targetUrl?: string | null
+  isActive?: boolean
+}
+
+export interface CreateAffiliateLinkParams {
+  name: string
+  destinationPath?: string
+  customSlug?: string
+}
+
+export interface UpdateAffiliateLinkParams {
+  name?: string
+  targetUrl?: string | null
+  isActive?: boolean
+}
+
+export interface AffiliateProgramQuery {
+  programId?: string
+}
+
+export type MarketingResourceKind = 'all' | 'collections' | 'files' | 'social_posts' | 'swipe_copy' | 'links'
+export type MerchantMarketingResourceKind = MarketingResourceKind | 'drafts'
+export type MarketingResourceStatus = 'published' | 'draft' | 'archived'
+export type MarketingResourcePlatform =
+  | 'x'
+  | 'linkedin'
+  | 'instagram'
+  | 'tiktok'
+  | 'facebook'
+  | 'threads'
+  | 'generic'
+
+export interface MarketingResource extends ApiObject {
+  id: string
+  title?: string
+  kind?: string
+}
+
+export interface ListMarketingResourcesParams {
+  kind?: MerchantMarketingResourceKind
+  status?: MarketingResourceStatus
+  search?: string
+  limit?: number
+  offset?: number
+}
+
+export interface ListAffiliateMarketingResourcesParams {
+  kind?: MarketingResourceKind
+  search?: string
+  limit?: number
+  offset?: number
+}
+
+export interface CreateMarketingSocialPostParams {
+  title: string
+  description?: string | null
+  body: string
+  platforms: MarketingResourcePlatform[]
+  instructions?: string | null
+  collectionId?: string | null
+  folderId?: string | null
+  status?: 'draft' | 'published'
+}
+
+export interface UpdateMarketingSocialPostParams {
+  programId: string
+  title?: string
+  description?: string | null
+  body?: string
+  platforms?: MarketingResourcePlatform[]
+  instructions?: string | null
+  collectionId?: string | null
+  folderId?: string | null
+}
+
+export interface MarketingResourceProgramTarget {
+  programId: string
+}
+
+export interface PublishMarketingResourceParams extends MarketingResourceProgramTarget {
+  notifyAffiliates?: boolean
+}
+
+export interface MarketingResourceDownloadTarget extends MarketingResourceProgramTarget {
+  mediaId?: string
+  resourceId?: string
+  collectionId?: string
+  bundle?: 'social_post_media' | 'collection_files'
+  file?: true
+}
+
+export interface MarketingResourceDownloadUrl extends ApiObject {
+  url: string
+  expires_at?: string
+  target?: unknown
+}
+
+export interface CreateMarketingSocialPostMediaUploadSessionParams extends MarketingResourceProgramTarget {
+  fileName: string
+  mimeType: string
+  fileSizeBytes: number
+}
+
+export interface MarketingResourceUploadSession extends ApiObject {
+  bucket: string
+  upload_path: string
+  upload_token: string
+  signed_url: string
+  expires_in_seconds: number
+}
+
+export interface CompleteMarketingSocialPostMediaUploadParams extends MarketingResourceProgramTarget {
+  uploadPath: string
+  uploadToken: string
+  fileName: string
+  altText?: string | null
+  sortOrder?: number
+}
+
+export interface ReorderMarketingSocialPostMediaParams extends MarketingResourceProgramTarget {
+  mediaIds: string[]
+}
+
+export interface UpdateMarketingSocialPostMediaParams extends MarketingResourceProgramTarget {
+  altText?: string | null
+}
+
+export interface ReplaceMarketingSocialPostMediaParams extends CompleteMarketingSocialPostMediaUploadParams {}
+
+export interface PublishMarketingResourceResponse extends ApiObject {
+  resource: MarketingResource
+  notification: {
+    requested: boolean
+    accepted?: boolean
+    error_code?: string | null
+    message?: string | null
+  }
+}
+
+export interface RemoveMarketingResourceMediaResponse extends ApiObject {
+  removed: boolean
+  media_id: string
+}
+
+export interface RenderMarketingSocialPostParams extends MarketingResourceProgramTarget {
+  affiliateLinkId?: string
+}
+
+export interface RenderedMarketingSocialPost extends ApiObject {
+  body?: string
+  disclosure?: string
+}
+
+export interface OnboardingMerchantProfile {
+  merchantId: string
+  companyName: string
+}
+
+export interface CompleteOnboardingResponse {
+  onboardingCompleted: boolean
+  onboardingStep: number
+}
+
+export interface ProgramTrackingStatus extends ApiObject {
+  programId: string
+}
+
+export interface MarketplaceProgram extends ApiObject {
+  programId?: string
+  id?: string
+  commissionPercent?: number
+}
+
+export interface ApplyToMarketplaceProgramParams {
+  message?: string
 }
 
 export type WebhookEventType =

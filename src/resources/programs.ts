@@ -1,6 +1,7 @@
 import type { HttpClient } from '../http.js'
 import type {
   Affiliate,
+  ApplicationSource,
   Coupon,
   ConnectProgramStripeParams,
   ConnectProgramStripeResponse,
@@ -13,10 +14,7 @@ import type {
   PaginatedResponse,
   Program,
   ProgramDetail,
-  ProgramDomainVerificationInitResponse,
-  ProgramDomainVerificationStatusResponse,
   ProgramStats,
-  SuccessResponse,
   ProgramStatus,
   UpdateProgramMarketplaceParams,
   UpdateProgramParams,
@@ -100,7 +98,15 @@ export class ProgramsResource {
 
   listAffiliates(
     id: string,
-    params?: { includeBlocked?: boolean; cursor?: string; limit?: number; page?: number; pageSize?: number; offset?: number }
+    params?: {
+      includeBlocked?: boolean
+      source?: ApplicationSource
+      cursor?: string
+      limit?: number
+      page?: number
+      pageSize?: number
+      offset?: number
+    }
   ): Promise<PaginatedResponse<Affiliate>> {
     return this.http.request({
       method: 'GET',
@@ -179,31 +185,6 @@ export class ProgramsResource {
     const envelope = await this.http.request<{ data: DisconnectProgramStripeResponse; meta: unknown }>({
       method: 'DELETE',
       path: `/programs/${id}/connect-stripe`,
-    })
-    return envelope.data
-  }
-
-  async verifyDomain(id: string, data: { domain: string }): Promise<ProgramDomainVerificationInitResponse> {
-    const envelope = await this.http.request<{ data: ProgramDomainVerificationInitResponse; meta: unknown }>({
-      method: 'POST',
-      path: `/programs/${id}/verify-domain`,
-      body: data,
-    })
-    return envelope.data
-  }
-
-  async removeDomainVerification(id: string): Promise<SuccessResponse> {
-    const envelope = await this.http.request<{ data: SuccessResponse; meta: unknown }>({
-      method: 'DELETE',
-      path: `/programs/${id}/verify-domain`,
-    })
-    return envelope.data
-  }
-
-  async getDomainStatus(id: string): Promise<ProgramDomainVerificationStatusResponse> {
-    const envelope = await this.http.request<{ data: ProgramDomainVerificationStatusResponse; meta: unknown }>({
-      method: 'GET',
-      path: `/programs/${id}/verify-domain/status`,
     })
     return envelope.data
   }

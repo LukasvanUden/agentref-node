@@ -1,5 +1,13 @@
 import type { HttpClient } from '../http.js'
-import type { Affiliate, AffiliateSortBy, AffiliateStatus, MutationOptions, PaginatedResponse, SortOrder } from '../types/index.js'
+import type {
+  Affiliate,
+  AffiliateSortBy,
+  AffiliateStatus,
+  ApplicationSource,
+  MutationOptions,
+  PaginatedResponse,
+  SortOrder,
+} from '../types/index.js'
 
 export class AffiliatesResource {
   constructor(private readonly http: HttpClient) {}
@@ -11,6 +19,7 @@ export class AffiliatesResource {
     sortBy?: AffiliateSortBy
     sortOrder?: SortOrder
     status?: AffiliateStatus
+    source?: ApplicationSource
     cursor?: string
     limit?: number
     page?: number
@@ -25,15 +34,6 @@ export class AffiliatesResource {
       method: 'GET',
       path: `/affiliates/${id}`,
       query: options?.include ? { include: options.include } : undefined,
-    })
-    return envelope.data
-  }
-
-  async approve(id: string, options?: MutationOptions): Promise<Affiliate> {
-    const envelope = await this.http.request<{ data: Affiliate; meta: unknown }>({
-      method: 'POST',
-      path: `/affiliates/${id}/approve`,
-      idempotencyKey: options?.idempotencyKey,
     })
     return envelope.data
   }

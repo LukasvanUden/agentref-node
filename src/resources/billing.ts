@@ -20,7 +20,7 @@ export class BillingResource {
     return envelope.data
   }
 
-  async subscribe(data: { tier: 'starter' | 'growth' | 'pro' | 'scale' }, options?: MutationOptions): Promise<BillingStatus> {
+  async subscribe(data: { tier: 'starter' | 'growth' | 'pro' }, options?: MutationOptions): Promise<BillingStatus> {
     const envelope = await this.http.request<{ data: BillingStatus; meta: unknown }>({
       method: 'POST',
       path: '/billing/subscribe',
