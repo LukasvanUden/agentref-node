@@ -4,6 +4,10 @@
 
 - No unreleased changes.
 
+## 5.1.1
+
+- Aligned Affiliate Link examples and types with the live API response `code` field.
+
 ## 5.1.0
 
 - Added full REST SDK coverage for Applications, Marketing Resources, Onboarding, Tracking, public Invites, Marketplace discovery/application, and the expanded Affiliate Workspace.

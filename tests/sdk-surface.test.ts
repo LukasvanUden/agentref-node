@@ -76,7 +76,7 @@ describe('complete SDK surface', () => {
       http.post(`${BASE}/me/links`, async ({ request }) => {
         capturedLinkBody = await request.json()
         capturedProgram = new URL(request.url).searchParams.get('program_id') ?? ''
-        return HttpResponse.json({ data: { id: 'link_1', refCode: 'jane-review' }, meta: {} }, { status: 201 })
+        return HttpResponse.json({ data: { id: 'link_1', code: 'jane-review' }, meta: {} }, { status: 201 })
       })
     )
 
@@ -101,7 +101,7 @@ describe('complete SDK surface', () => {
       destination_path: '/pricing',
       custom_slug: 'jane-review',
     })
-    expect(link.refCode).toBe('jane-review')
+    expect(link.code).toBe('jane-review')
   })
 
   it('marketingResources supports merchant and affiliate workflows', async () => {

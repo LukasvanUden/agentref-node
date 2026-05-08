@@ -521,7 +521,7 @@ export interface AffiliateWorkspaceIdentity extends ApiObject {
 export interface AffiliateLink extends ApiObject {
   id: string
   name?: string
-  refCode?: string
+  code?: string
   targetUrl?: string | null
   isActive?: boolean
 }

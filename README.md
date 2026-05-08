@@ -34,7 +34,7 @@ if (firstProgram) {
     { name: 'Pricing', destinationPath: '/pricing', customSlug: 'jane-review' },
     { programId: detail.programId, idempotencyKey: 'create-pricing-link' }
   )
-  console.log(overview.programCount, detail.programName, link.refCode)
+  console.log(overview.programCount, detail.programName, link.code)
 }
 ```
 
